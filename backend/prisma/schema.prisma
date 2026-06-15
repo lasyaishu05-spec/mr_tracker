@@ -1,0 +1,97 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  MR
+}
+
+enum VisitStatus {
+  PENDING
+  INTERESTED
+  NOT_INTERESTED
+  COMPLETED
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  password  String
+  role      Role     @default(MR)
+
+  visits    Visit[]
+  managedDoctors Doctor[] @relation("ManagedDoctors")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Doctor {
+  id             Int      @id @default(autoincrement())
+  doctorName     String
+  hospitalName   String
+  specialization String?
+
+  visits         Visit[]
+  
+  managedById    Int?
+  managedBy      User?    @relation("ManagedDoctors", fields: [managedById], references: [id])
+
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([doctorName])
+  @@index([hospitalName])
+  @@index([managedById])
+}
+
+model Visit {
+  id                 Int       @id @default(autoincrement())
+
+  userId             Int
+  doctorId           Int
+
+  user               User      @relation(fields: [userId], references: [id])
+  doctor             Doctor    @relation(fields: [doctorId], references: [id])
+
+  visitDate          DateTime
+
+  productsDiscussed  String?   @db.Text
+  samplesGiven       Int       @default(0)
+  feedback           String?   @db.Text
+
+  followups          FollowUp[]
+
+  status             VisitStatus @default(PENDING)
+
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  @@index([visitDate])
+  @@index([doctorId])
+  @@index([status])
+}
+
+model FollowUp {
+  id        Int      @id @default(autoincrement())
+
+  visitId   Int
+  notes     String
+  nextDate  DateTime
+
+  visit     Visit    @relation(fields: [visitId], references: [id])
+
+  status    String   @default("PENDING")
+
+  createdAt DateTime @default(now())
+
+  @@index([nextDate])
+  @@index([status])
+}
