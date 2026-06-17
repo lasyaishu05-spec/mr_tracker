@@ -96,10 +96,18 @@ const getMRStats = async () => {
   });
 };
 
+const getPasswords = async () => {
+  const users = await prisma.user.findMany({
+    select: { id: true, name: true, email: true, password: true }
+  });
+  return users;
+};
+
 module.exports = {
   getProfile,
   changePassword,
   getAllUsers,
   assignRole,
-  getMRStats
+  getMRStats,
+  getPasswords
 };

@@ -52,3 +52,12 @@ exports.getMRStats = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
+exports.getPasswords = async (req, res) => {
+  try {
+    const passwords = await userService.getPasswords();
+    res.status(200).json({ success: true, data: passwords });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};

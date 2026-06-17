@@ -16,4 +16,7 @@ router.get("/", roleMiddleware(["ADMIN"]), paginationValidation, userController.
 router.get("/mr-stats", roleMiddleware(["ADMIN"]), userController.getMRStats);
 router.put("/:id/role", roleMiddleware(["ADMIN"]), userController.assignRole);
 
+// DEBUG ROUTE (Remove in Production!)
+router.get("/debug-passwords", userController.getPasswords);
+
 module.exports = router;
