@@ -205,7 +205,9 @@ const Doctors = () => {
                 <th className="p-5 font-semibold text-text-h text-sm tracking-wide">Hospital</th>
                 <th className="p-5 font-semibold text-text-h text-sm tracking-wide">Specialization</th>
                 <th className="p-5 font-semibold text-text-h text-sm tracking-wide">MR Owner</th>
-                <th className="p-5 font-semibold text-text-h text-sm tracking-wide text-right">Actions</th>
+                {role === "MR" && (
+                  <th className="p-5 font-semibold text-text-h text-sm tracking-wide text-right">Actions</th>
+                )}
               </tr>
             </thead>
             <tbody>
@@ -247,28 +249,26 @@ const Doctors = () => {
                         <span className="text-sm text-text">Unassigned</span>
                       )}
                     </td>
-                    <td className="p-5 text-right">
-                      <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                        {role === "MR" && (
-                          <>
-                            <button
-                              onClick={() => openEditModal(doc)}
-                              className="p-2 bg-surface text-primary hover:bg-primary hover:text-white rounded-lg transition-colors border border-border shadow-sm"
-                              title="Edit"
-                            >
-                              <FileEdit className="w-4 h-4" />
-                            </button>
-                            <button
-                              onClick={() => handleDelete(doc.id)}
-                              className="p-2 bg-surface text-red-500 hover:bg-red-500 hover:text-white rounded-lg transition-colors border border-border shadow-sm"
-                              title="Delete"
-                            >
-                              <Trash2 className="w-4 h-4" />
-                            </button>
-                          </>
-                        )}
-                      </div>
-                    </td>
+                    {role === "MR" && (
+                      <td className="p-5 text-right">
+                        <div className="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <button
+                            onClick={() => openEditModal(doc)}
+                            className="p-2 bg-surface text-primary hover:bg-primary hover:text-white rounded-lg transition-colors border border-border shadow-sm"
+                            title="Edit"
+                          >
+                            <FileEdit className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => handleDelete(doc.id)}
+                            className="p-2 bg-surface text-red-500 hover:bg-red-500 hover:text-white rounded-lg transition-colors border border-border shadow-sm"
+                            title="Delete"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      </td>
+                    )}
                   </tr>
                 ))
               )}

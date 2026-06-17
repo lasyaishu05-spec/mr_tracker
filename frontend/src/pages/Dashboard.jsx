@@ -247,7 +247,6 @@ const Dashboard = () => {
                     <span className={`status-badge ${getStatusClass(visit.status)}`}>
                       {visit.status?.replace('_', ' ')}
                     </span>
-                    <ChevronRight className="w-5 h-5 text-text opacity-0 group-hover:opacity-100 transition-opacity transform translate-x-[-10px] group-hover:translate-x-0" />
                   </div>
                 </div>
               ))
@@ -281,7 +280,6 @@ const Dashboard = () => {
                     }`}>
                       {new Date(followup.nextDate) < new Date() ? 'Overdue' : 'Scheduled'}
                     </span>
-                    <ChevronRight className="w-5 h-5 text-text opacity-0 group-hover:opacity-100 transition-opacity transform translate-x-[-10px] group-hover:translate-x-0" />
                   </div>
                 </div>
               ))
