@@ -4,6 +4,10 @@ require("../services/doctorService");
 exports.createDoctor = async (req, res) => {
 
   try {
+    // If the user is an MR, automatically assign the doctor to them
+    if (req.user && req.user.role === "MR") {
+      req.body.managedById = req.user.id;
+    }
 
     const doctor =
       await doctorService.createDoctor(
@@ -94,6 +98,10 @@ exports.getDoctorById = async (req, res) => {
 exports.updateDoctor = async (req, res) => {
 
   try {
+    // If the user is an MR, ensure they can't reassign the doctor to someone else
+    if (req.user && req.user.role === "MR") {
+      req.body.managedById = req.user.id;
+    }
 
     const doctor =
       await doctorService.updateDoctor(
