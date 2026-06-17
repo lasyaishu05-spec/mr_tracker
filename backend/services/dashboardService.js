@@ -141,7 +141,9 @@ const getMRDashboard = async (userId) => {
     prisma.visit.count({
       where: visitWhere,
     }),
-    prisma.doctor.count(),
+    prisma.doctor.count({
+      where: { managedById: userId },
+    }),
     prisma.visit.groupBy({
       by: ["status"],
       where: visitWhere,

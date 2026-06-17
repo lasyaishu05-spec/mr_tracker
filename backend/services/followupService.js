@@ -11,7 +11,14 @@ const createFollowUp = async (data) => {
     include: {
       visit: {
         include: {
-          doctor: true
+          doctor: true,
+          user: {
+            select: {
+              id: true,
+              name: true,
+              email: true
+            }
+          }
         }
       }
     }
@@ -24,7 +31,9 @@ const getAllFollowUps = async (startDate, endDate, user) => {
     ? {}
     : {
         visit: {
-          userId: Number(user.id)
+          doctor: {
+            managedById: Number(user.id)
+          }
         }
       };
 

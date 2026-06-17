@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 
 const authMiddleware = require("../middleware/authMiddleware");
+const roleMiddleware = require("../middleware/roleMiddleware");
 const visitController = require("../controllers/visitController");
 
 // Apply authentication middleware to all routes
@@ -14,12 +15,12 @@ router.get("/", visitController.getAllVisits);
 router.get("/:id", visitController.getVisitById);
 
 // Create a new visit
-router.post("/", visitController.createVisit);
+router.post("/", roleMiddleware(["MR"]), visitController.createVisit);
 
 // Update a visit
-router.put("/:id", visitController.updateVisit);
+router.put("/:id", roleMiddleware(["MR"]), visitController.updateVisit);
 
 // Delete a visit
-router.delete("/:id", visitController.deleteVisit);
+router.delete("/:id", roleMiddleware(["MR"]), visitController.deleteVisit);
 
 module.exports = router;

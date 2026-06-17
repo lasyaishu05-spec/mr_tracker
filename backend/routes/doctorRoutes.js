@@ -13,7 +13,7 @@ const roleMiddleware = require("../middleware/roleMiddleware");
 router.post(
   "/",
   authMiddleware,
-  roleMiddleware(["ADMIN"]),
+  roleMiddleware(["MR"]),
   doctorController.createDoctor
 );
 
@@ -32,14 +32,14 @@ router.get(
 router.put(
   "/:id",
   authMiddleware,
-  roleMiddleware(["ADMIN"]),
+  roleMiddleware(["MR"]),
   doctorController.updateDoctor
 );
 
 router.delete(
   "/:id",
   authMiddleware,
-  roleMiddleware(["ADMIN"]),
+  roleMiddleware(["MR"]),
   doctorController.deleteDoctor
 );
 

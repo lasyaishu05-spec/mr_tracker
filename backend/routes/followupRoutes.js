@@ -8,9 +8,12 @@ require("../controllers/followupController");
 const authMiddleware =
 require("../middleware/authMiddleware");
 
+const roleMiddleware = require("../middleware/roleMiddleware");
+
 router.post(
   "/",
   authMiddleware,
+  roleMiddleware(["MR"]),
   followupController.createFollowUp
 );
 

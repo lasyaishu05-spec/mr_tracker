@@ -34,15 +34,41 @@ const mapDoctorWithMrOwner = (doctor) => {
 };
 
 const createDoctor = async (data) => {
-return prisma.doctor.create({
-data: normalizeDoctorData(data)
-});
+  const doctor = await prisma.doctor.create({
+    data: normalizeDoctorData(data),
+    include: {
+      visits: {
+        take: 1,
+        orderBy: {
+          visitDate: "desc"
+        },
+        include: {
+          user: {
+            select: {
+              id: true,
+              name: true,
+              email: true
+            }
+          }
+        }
+      },
+      managedBy: {
+        select: {
+          id: true,
+          name: true,
+          email: true
+        }
+      }
+    }
+  });
+  return mapDoctorWithMrOwner(doctor);
 };
 
 const getAllDoctors = async (
 page = 1,
 limit = 10,
-search = ""
+search = "",
+user = null
 ) => {
 
 const skip = (page - 1) * limit;
@@ -79,6 +105,10 @@ contains: search
 ]
 }
 : {};
+
+if (user && user.role === "MR") {
+  where.managedById = user.id;
+}
 
 const totalDoctors =
 await prisma.doctor.count({
@@ -164,12 +194,37 @@ return doctor ? mapDoctorWithMrOwner(doctor) : null;
 };
 
 const updateDoctor = async (id, data) => {
-return prisma.doctor.update({
-where: {
-id: Number(id)
-},
-data: normalizeDoctorData(data)
-});
+  const doctor = await prisma.doctor.update({
+    where: {
+      id: Number(id)
+    },
+    data: normalizeDoctorData(data),
+    include: {
+      visits: {
+        take: 1,
+        orderBy: {
+          visitDate: "desc"
+        },
+        include: {
+          user: {
+            select: {
+              id: true,
+              name: true,
+              email: true
+            }
+          }
+        }
+      },
+      managedBy: {
+        select: {
+          id: true,
+          name: true,
+          email: true
+        }
+      }
+    }
+  });
+  return mapDoctorWithMrOwner(doctor);
 };
 
 const deleteDoctor = async (id) => {

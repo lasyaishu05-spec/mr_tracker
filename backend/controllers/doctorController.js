@@ -43,7 +43,8 @@ exports.getAllDoctors = async (req, res) => {
       await doctorService.getAllDoctors(
         page,
         limit,
-        search
+        search,
+        req.user
       );
 
     res.status(200).json({
