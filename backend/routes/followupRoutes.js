@@ -13,7 +13,7 @@ const roleMiddleware = require("../middleware/roleMiddleware");
 router.post(
   "/",
   authMiddleware,
-  roleMiddleware(["MR"]),
+  roleMiddleware(["MR", "ADMIN"]),
   followupController.createFollowUp
 );
 

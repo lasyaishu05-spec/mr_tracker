@@ -15,12 +15,12 @@ router.get("/", visitController.getAllVisits);
 router.get("/:id", visitController.getVisitById);
 
 // Create a new visit
-router.post("/", roleMiddleware(["MR"]), visitController.createVisit);
+router.post("/", roleMiddleware(["MR", "ADMIN"]), visitController.createVisit);
 
 // Update a visit
-router.put("/:id", roleMiddleware(["MR"]), visitController.updateVisit);
+router.put("/:id", roleMiddleware(["MR", "ADMIN"]), visitController.updateVisit);
 
 // Delete a visit
-router.delete("/:id", roleMiddleware(["MR"]), visitController.deleteVisit);
+router.delete("/:id", roleMiddleware(["MR", "ADMIN"]), visitController.deleteVisit);
 
 module.exports = router;
