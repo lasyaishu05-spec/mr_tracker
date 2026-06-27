@@ -9,6 +9,16 @@ exports.getProfile = async (req, res) => {
   }
 };
 
+exports.createUser = async (req, res) => {
+  try {
+    const user = await userService.createUser(req.body);
+    res.status(201).json({ success: true, message: "User created successfully", data: user });
+  } catch (error) {
+    res.status(400).json({ success: false, message: error.message });
+  }
+};
+
+
 exports.changePassword = async (req, res) => {
   try {
     const { oldPassword, newPassword } = req.body;

@@ -17,4 +17,14 @@ router.post(
   authController.login
 );
 
+router.post(
+  "/forgot-password",
+  authController.forgotPassword
+);
+
+router.post(
+  "/pin-login",
+  authController.pinLogin
+);
+
 module.exports = router;

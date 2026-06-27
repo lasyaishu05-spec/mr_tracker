@@ -1,8 +1,8 @@
 import { useCallback, useState, useEffect } from "react";
 import api from "../services/api";
 import { toast } from "react-hot-toast";
-import { Users as UsersIcon, Shield, ShieldCheck, UserCog, User, ChevronLeft, ChevronRight } from "lucide-react";
-import { onDataChange, offDataChange } from "../utils/dataEvents";
+import { Users as UsersIcon, Shield, ShieldCheck, UserCog, User, ChevronLeft, ChevronRight, UserPlus, X } from "lucide-react";
+import { onDataChange, offDataChange, notifyDataChanged } from "../utils/dataEvents";
 
 const Users = () => {
   const [users, setUsers] = useState([]);
@@ -10,6 +10,22 @@ const Users = () => {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalUsers, setTotalUsers] = useState(0);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [newUser, setNewUser] = useState({ name: "", email: "", password: "", role: "MR" });
+
+  const handleAddUser = async (e) => {
+    e.preventDefault();
+    try {
+      await api.post("/users", newUser);
+      toast.success("User added successfully");
+      setIsModalOpen(false);
+      setNewUser({ name: "", email: "", password: "", role: "MR" });
+      fetchUsers();
+      notifyDataChanged();
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to add user");
+    }
+  };
 
   const fetchUsers = useCallback(async ({ silent = false } = {}) => {
     try {
@@ -55,6 +71,13 @@ const Users = () => {
             Manage system access and assign roles. ({totalUsers} total)
           </p>
         </div>
+        <button 
+          onClick={() => setIsModalOpen(true)}
+          className="px-6 py-2.5 bg-primary text-white rounded-xl hover:bg-primary-hover transition-colors font-semibold shadow-lg shadow-primary/25 flex items-center gap-2"
+        >
+          <UserPlus className="w-5 h-5" />
+          Add User
+        </button>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 stagger-1">
@@ -167,6 +190,90 @@ const Users = () => {
           </div>
         )}
       </div>
+
+      {/* Add User Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm animate-fade-in">
+          <div className="bg-surface border border-border rounded-2xl shadow-2xl w-full max-w-md overflow-hidden" onClick={e => e.stopPropagation()}>
+            <div className="p-6 border-b border-border flex items-center justify-between">
+              <h2 className="text-xl font-bold text-text-h">Add New User</h2>
+              <button 
+                onClick={() => setIsModalOpen(false)}
+                className="p-2 text-text hover:text-text-h hover:bg-surface-hover rounded-xl transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            
+            <form onSubmit={handleAddUser} className="p-6 space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-text-h mb-1.5">Full Name</label>
+                <input
+                  type="text"
+                  required
+                  value={newUser.name}
+                  onChange={(e) => setNewUser({...newUser, name: e.target.value})}
+                  className="w-full px-4 py-2.5 bg-background border border-border rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-text-h"
+                  placeholder="John Doe"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-text-h mb-1.5">Email Address</label>
+                <input
+                  type="email"
+                  required
+                  value={newUser.email}
+                  onChange={(e) => setNewUser({...newUser, email: e.target.value})}
+                  className="w-full px-4 py-2.5 bg-background border border-border rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-text-h"
+                  placeholder="john@example.com"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-text-h mb-1.5">Password</label>
+                <input
+                  type="password"
+                  required
+                  minLength={6}
+                  value={newUser.password}
+                  onChange={(e) => setNewUser({...newUser, password: e.target.value})}
+                  className="w-full px-4 py-2.5 bg-background border border-border rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-text-h"
+                  placeholder="••••••••"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-text-h mb-1.5">Role</label>
+                <select
+                  value={newUser.role}
+                  onChange={(e) => setNewUser({...newUser, role: e.target.value})}
+                  className="w-full px-4 py-2.5 bg-background border border-border rounded-xl focus:ring-2 focus:ring-primary/20 focus:border-primary outline-none transition-all text-text-h"
+                >
+                  <option value="MR">Medical Representative (MR)</option>
+                  <option value="ADMIN">Administrator</option>
+                </select>
+              </div>
+
+              <div className="pt-4 flex gap-3">
+                <button
+                  type="button"
+                  onClick={() => setIsModalOpen(false)}
+                  className="flex-1 px-4 py-2.5 bg-surface-hover text-text-h font-semibold rounded-xl hover:bg-border transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 px-4 py-2.5 bg-primary text-white font-semibold rounded-xl hover:bg-primary-hover shadow-lg shadow-primary/25 transition-all"
+                >
+                  Create User
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

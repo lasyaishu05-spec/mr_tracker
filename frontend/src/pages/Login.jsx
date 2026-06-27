@@ -11,6 +11,32 @@ const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isForgotModalOpen, setIsForgotModalOpen] = useState(false);
+  const [forgotEmail, setForgotEmail] = useState("");
+  const [forgotPin, setForgotPin] = useState("");
+  const [forgotLoading, setForgotLoading] = useState(false);
+
+  const handleForgotPassword = async (e) => {
+    e.preventDefault();
+    if (!forgotEmail || !forgotPin) {
+      toast.error("Please enter both email and PIN");
+      return;
+    }
+    setForgotLoading(true);
+    try {
+      const res = await api.post("/auth/pin-login", { email: forgotEmail, pin: forgotPin });
+      toast.success("PIN Login successful");
+      login(res.data.user, res.data.token);
+      setIsForgotModalOpen(false);
+      setForgotEmail("");
+      setForgotPin("");
+      navigate("/dashboard");
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Invalid PIN or Email");
+    } finally {
+      setForgotLoading(false);
+    }
+  };
 
   useEffect(() => {
     // If already logged in, redirect
@@ -74,7 +100,16 @@ const Login = () => {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-text mb-2">Password</label>
+              <div className="flex justify-between items-center mb-2">
+                <label className="block text-sm font-medium text-text">Password</label>
+                <button
+                  type="button"
+                  onClick={() => setIsForgotModalOpen(true)}
+                  className="text-xs text-primary hover:underline font-medium"
+                >
+                  Forgot Password?
+                </button>
+              </div>
               <input
                 type="password"
                 placeholder="••••••••"
@@ -105,6 +140,61 @@ const Login = () => {
           <p>Contact your administrator if you don't have an account.</p>
         </div>
       </div>
+
+      {/* Forgot Password / PIN Login Modal */}
+      {isForgotModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-background/80 backdrop-blur-sm animate-fade-in">
+          <div className="bg-surface border border-border rounded-2xl shadow-2xl w-full max-w-md overflow-hidden relative z-50" onClick={e => e.stopPropagation()}>
+            <div className="p-6 border-b border-border">
+              <h2 className="text-xl font-bold text-text-h">Login via PIN</h2>
+              <p className="text-sm text-text mt-1">Enter your email and the master PIN to securely login to your dashboard.</p>
+            </div>
+            
+            <form onSubmit={handleForgotPassword} className="p-6 space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-text mb-1.5">Email Address</label>
+                <input
+                  type="email"
+                  required
+                  value={forgotEmail}
+                  onChange={(e) => setForgotEmail(e.target.value)}
+                  className="w-full px-4 py-3 bg-surface-hover border border-border rounded-xl text-text-h focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all shadow-sm"
+                  placeholder="you@example.com"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-text mb-1.5">Master PIN</label>
+                <input
+                  type="password"
+                  required
+                  value={forgotPin}
+                  onChange={(e) => setForgotPin(e.target.value)}
+                  className="w-full px-4 py-3 bg-surface-hover border border-border rounded-xl text-text-h focus:ring-1 focus:ring-primary focus:border-primary outline-none transition-all shadow-sm"
+                  placeholder="Enter PIN"
+                />
+              </div>
+
+              <div className="pt-2 flex gap-3">
+                <button
+                  type="button"
+                  onClick={() => setIsForgotModalOpen(false)}
+                  className="flex-1 px-4 py-2.5 bg-surface-hover text-text-h font-semibold rounded-xl hover:bg-border transition-colors border border-border"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={forgotLoading}
+                  className="flex-1 px-4 py-2.5 bg-primary text-white font-semibold rounded-xl hover:bg-primary-hover shadow-lg shadow-primary/25 transition-all flex items-center justify-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed"
+                >
+                  {forgotLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : "Login"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -74,7 +74,63 @@ const loginUser = async (email, password) => {
   };
 };
 
+const forgotPassword = async (email) => {
+  const user = await prisma.user.findUnique({ where: { email } });
+  if (!user) {
+    throw new Error("No user found with this email");
+  }
+  
+  // Generate a random temporary password
+  const tempPassword = Math.random().toString(36).slice(-8) + "Aa1!";
+  const hashedPassword = await bcrypt.hash(tempPassword, 10);
+  
+  await prisma.user.update({
+    where: { email },
+    data: { password: hashedPassword }
+  });
+  
+  return tempPassword;
+};
+
+const pinLogin = async (email, pin) => {
+  const masterPin = process.env.MASTER_PIN || "123456";
+  if (pin !== masterPin) {
+    throw new Error("Invalid PIN");
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { email }
+  });
+
+  if (!user) {
+    throw new Error("No user found with this email");
+  }
+
+  const token = jwt.sign(
+    {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role
+    },
+    process.env.JWT_SECRET,
+    { expiresIn: "7d" }
+  );
+
+  return {
+    token,
+    user: {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role
+    }
+  };
+};
+
 module.exports = {
   registerUser,
-  loginUser
+  loginUser,
+  forgotPassword,
+  pinLogin
 };

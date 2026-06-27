@@ -12,6 +12,7 @@ router.get("/profile", userController.getProfile);
 router.put("/change-password", changePasswordValidation, userController.changePassword);
 
 // Admin only routes
+router.post("/", roleMiddleware(["ADMIN"]), userController.createUser);
 router.get("/", roleMiddleware(["ADMIN"]), paginationValidation, userController.getAllUsers);
 router.get("/mr-stats", roleMiddleware(["ADMIN"]), userController.getMRStats);
 router.put("/:id/role", roleMiddleware(["ADMIN"]), userController.assignRole);

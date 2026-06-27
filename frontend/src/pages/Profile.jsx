@@ -111,7 +111,7 @@ const Profile = () => {
           <form onSubmit={handlePasswordChange} className="space-y-6">
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-text mb-2">Current Password</label>
+                <label className="block text-sm font-medium text-text mb-2">Current Password or Master PIN</label>
                 <input
                   type="password"
                   value={oldPassword}
