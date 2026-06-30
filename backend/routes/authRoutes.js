@@ -5,6 +5,8 @@ const router = express.Router();
 const authController = require("../controllers/authController");
 const { registerValidation, loginValidation } = require("../middleware/validationMiddleware");
 
+const { ipRateLimiter, accountLockoutLimiter } = require("../middleware/loginRateLimiter");
+
 router.post(
   "/register",
   registerValidation,
@@ -13,6 +15,8 @@ router.post(
 
 router.post(
   "/login",
+  ipRateLimiter,
+  accountLockoutLimiter,
   loginValidation,
   authController.login
 );

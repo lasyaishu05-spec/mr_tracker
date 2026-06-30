@@ -1,5 +1,50 @@
 const { validationResult, body, query } = require('express-validator');
+const { z } = require('zod');
+const sanitizeHtml = require('sanitize-html');
 
+const sanitizeInput = (val) => {
+  if (typeof val !== 'string') return val;
+  // Strip HTML tags and script tags
+  let sanitized = sanitizeHtml(val, {
+    allowedTags: [],
+    allowedAttributes: {},
+  });
+  // Strip special characters except some standard ones like @, ., -, _
+  return sanitized.replace(/[<>{}[\];'"\\`&=$^]/g, '');
+};
+
+const registerSchema = z.object({
+  name: z.string().min(2, "Name must be at least 2 characters").max(50, "Name too long").transform(sanitizeInput),
+  email: z.string().email("Invalid email format").transform(sanitizeInput),
+  password: z.string().min(6, "Password must be at least 6 characters").max(100, "Password too long").transform(sanitizeInput)
+});
+
+const loginSchema = z.object({
+  email: z.string().email("Invalid email format").transform(sanitizeInput),
+  password: z.string().min(1, "Password is required").transform(sanitizeInput)
+});
+
+const registerValidation = (req, res, next) => {
+  try {
+    req.body = registerSchema.parse(req.body);
+    next();
+  } catch (err) {
+    console.error(`[Validation Error - Register]: ${err.message}`);
+    return res.status(400).json({ success: false, errors: [{ msg: "Invalid input" }] });
+  }
+};
+
+const loginValidation = (req, res, next) => {
+  try {
+    req.body = loginSchema.parse(req.body);
+    next();
+  } catch (err) {
+    console.error(`[Validation Error - Login]: ${err.message}`);
+    return res.status(400).json({ success: false, errors: [{ msg: "Invalid input" }] });
+  }
+};
+
+// Keeping the original validator setup for other routes temporarily
 const handleValidationErrors = (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -7,19 +52,6 @@ const handleValidationErrors = (req, res, next) => {
   }
   next();
 };
-
-const registerValidation = [
-  body('name').notEmpty().withMessage('Name is required'),
-  body('email').isEmail().withMessage('Valid email is required'),
-  body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters long'),
-  handleValidationErrors
-];
-
-const loginValidation = [
-  body('email').isEmail().withMessage('Valid email is required'),
-  body('password').notEmpty().withMessage('Password is required'),
-  handleValidationErrors
-];
 
 const changePasswordValidation = [
   body('oldPassword').notEmpty().withMessage('Old password is required'),

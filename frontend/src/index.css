@@ -1,6 +1,7 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Space+Mono&family=Syne:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Space+Mono&family=Syne:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400;1,600&display=swap');
 
 @import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
   --color-primary-50: #e0f2fe;
@@ -19,6 +20,7 @@
   --font-heading: 'Syne', sans-serif;
   --font-sans: 'Outfit', sans-serif;
   --font-mono: 'Space Mono', monospace;
+  --font-editorial: 'Playfair Display', serif;
 
   --color-bg: var(--bg);
   --color-surface: var(--bg-surface);
@@ -32,31 +34,29 @@
 }
 
 :root {
-  /* Light Theme (Clinical Navy/Green/Paper) */
-  --bg: #f8fafc;
+  /* Pink Theme (Vibrant Magenta/White) */
+  --bg: #FAFAFA;
   --bg-surface: #ffffff;
-  --bg-surface-hover: #f1f5f9;
-  --text: #334155;
-  --text-h: #0f172a;
-  --border: #e2e8f0;
-  --primary: #0ea5e9;
-  --primary-hover: #0284c7;
-  --accent: #10b981; /* Medical green */
-  --shadow-glow: 0 4px 20px rgba(14, 165, 233, 0.15);
+  --bg-surface-hover: #FFF1F5;
+  --text: #4A4A4A;
+  --text-h: #1A1A1A;
+  --border: #F3E8EC;
+  --primary: #E8308C; /* Vibrant Magenta */
+  --primary-hover: #D0287D;
+  --accent: #E8308C; 
+  --shadow-glow: 0 4px 20px rgba(232, 48, 140, 0.15);
   --glass-bg: rgba(255, 255, 255, 0.85);
-  --glass-border: rgba(15, 23, 42, 0.05);
+  --glass-border: rgba(232, 48, 140, 0.05);
 
   --sans: 'Outfit', system-ui, sans-serif;
-  --heading: 'Syne', system-ui, sans-serif;
+  --heading: 'Outfit', system-ui, sans-serif; /* Keep Outfit for everything to match sleek UI */
   --mono: 'Space Mono', monospace;
+  --editorial: 'Playfair Display', serif;
 
   font-family: var(--sans);
   color: var(--text);
   background-color: var(--bg);
-  background-image: 
-    radial-gradient(circle at top right, rgba(14, 165, 233, 0.08) 0%, transparent 40%),
-    radial-gradient(circle at bottom left, rgba(16, 185, 129, 0.05) 0%, transparent 40%);
-  background-attachment: fixed;
+  background-image: none; /* Clean solid background */
 }
 
 [data-theme="dark"] {
